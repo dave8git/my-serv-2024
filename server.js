@@ -3,24 +3,32 @@ const path = require('path');
 
 const app = express(); 
 
-app.use('/user/*', (req, res,next) => {
-    res.send('Żeby tutaj wejść, musisz się najpierw zalogować! Tyle w temacie ;)')
-    next();
+app.use((req, res, next) => {
+    res.show = (name) => {
+        res.sendFile(path.join(__dirname, `/views/${name}`));
+    };
+    next(); 
 });
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+app.use('/user/*', (req, res,next) => {
+    res.show('forbidden.html');
+    next();
+});
+
 app.get('/', (req, res) => {
-    res.send('<h1>Hello World!</h1>');
+    res.show('home.html');
 });
 
 app.get('/about', (req, res) => {
-    res.send('<h1>About me</h1>');
+    res.show('about.html');
 });
 
 
+
 app.use((req, res) => {
-    res.status(404).send('404 not found...');
+    res.show('404.html');
 });
 
 app.listen(8000, () => {
